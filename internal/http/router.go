@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,8 +12,17 @@ func BuildRouter() *gin.Engine {
 
 	api := r.Group("/api")
 
-	api.GET("/cars", func(c *gin.Context) { c.JSON(200, gin.H{"cars": []string{"car1", "car2", "car3"}}) })
-	api.GET("/cars/:id", func(c *gin.Context) { c.JSON(200, gin.H{"car": 123}) })
+	api.POST("/fipe", func(c *gin.Context) {
+		var req models.FipeRequest
+		if err := c.BindJSON(&req); err != nil {
+			c.JSON(400, gin.H{"error": "invalid request"})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"fipe": req,
+		})
+	})
 
 	return r
 }
