@@ -1,19 +1,16 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/router"
 )
 
 func main() {
-	router := gin.Default()
+	router := router.BuildRouter()
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello, Gin!",
-		})
-	})
-
-	router.Run(":8080")
+	log.Println("listening on port 8080")
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
