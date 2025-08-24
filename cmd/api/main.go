@@ -3,14 +3,19 @@ package main
 import (
 	"log"
 
-	"github.com/EduBarreira1212/vehicle-details-api/internal/http"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/config"
+	apihttp "github.com/EduBarreira1212/vehicle-details-api/internal/http"
 )
 
 func main() {
-	router := http.BuildRouter()
+	cfg := config.LoadConfig()
 
-	log.Println("listening on port 8080")
-	if err := router.Run(":8080"); err != nil {
+	router := apihttp.BuildRouter()
+
+	addr := ":" + cfg.Port
+	log.Printf("listening on %s", addr)
+
+	if err := router.Run(addr); err != nil {
 		log.Fatal(err)
 	}
 }
