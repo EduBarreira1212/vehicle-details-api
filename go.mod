@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/badoux/checkmail v1.2.4
 	github.com/bytedance/sonic v1.14.0 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
