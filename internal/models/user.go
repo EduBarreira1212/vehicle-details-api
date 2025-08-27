@@ -26,7 +26,7 @@ func (user *User) Prepare(step string) error {
 		return err
 	}
 
-	if err := user.format(step); err != nil {
+	if err := user.format(); err != nil {
 		return err
 	}
 
@@ -53,7 +53,7 @@ func (user *User) validate(step string) error {
 	return nil
 }
 
-func (user *User) format(step string) error {
+func (user *User) format() error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
 
