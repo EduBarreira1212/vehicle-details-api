@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/EduBarreira1212/vehicle-details-api/internal/controllers"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
 	"github.com/gin-gonic/gin"
 )
@@ -24,17 +25,7 @@ func BuildRouter() *gin.Engine {
 		})
 	})
 
-	api.POST("/users", func(c *gin.Context) {
-		var user models.User
-		if err := c.BindJSON(&user); err != nil {
-			c.JSON(400, gin.H{"error": "invalid request"})
-			return
-		}
-
-		c.JSON(200, gin.H{
-			"user": user,
-		})
-	})
+	api.POST("/users", controllers.CreateUser)
 
 	return r
 }
