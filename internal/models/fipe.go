@@ -7,7 +7,7 @@ import (
 )
 
 type FipeRequest struct {
-	Plate string `json:"plate"`
+	Plate string `json:"plate,omitempty"`
 }
 
 func (fipeRequest *FipeRequest) Validate() error {

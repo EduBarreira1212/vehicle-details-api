@@ -11,13 +11,13 @@ import (
 )
 
 type User struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	Name      string         `json:"name"`
-	Email     string         `gorm:"uniqueIndex;size:180;not null" json:"email"`
-	Password  string         `json:"password"`
-	History   datatypes.JSON `json:"history"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	ID        uint           `gorm:"primaryKey" json:"id,omitempty"`
+	Name      string         `json:"name,omitempty"`
+	Email     string         `gorm:"uniqueIndex;size:180;not null" json:"email,omitempty"`
+	Password  string         `json:"password,omitempty"`
+	History   datatypes.JSON `json:"history,omitempty"`
+	CreatedAt time.Time      `json:"created_at,omitempty"`
+	UpdatedAt time.Time      `json:"updated_at,omitempty"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
