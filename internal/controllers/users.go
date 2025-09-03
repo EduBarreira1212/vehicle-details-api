@@ -1,0 +1,41 @@
+package controllers
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+
+	"github.com/EduBarreira1212/vehicle-details-api/internal/config"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/repositories"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/responses"
+	"github.com/gin-gonic/gin"
+)
+
+func CreateUser(c *gin.Context) {
+	parameters, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var user models.User
+	if err = json.Unmarshal(parameters, &user); err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = user.Prepare("register"); err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	repository := repositories.NewUserRepository(config.DB)
+	userCreated, err := repository.Create(c.Request.Context(), user.Name, user.Email, user.Password)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusCreated, userCreated)
+}
