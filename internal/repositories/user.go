@@ -15,7 +15,7 @@ func NewUserRepository(db *gorm.DB) *User {
 	return &User{db: db}
 }
 
-func (repository User) Create(ctx context.Context, name, email, password string) (*models.User, error) {
+func (repository *User) Create(ctx context.Context, name, email, password string) (*models.User, error) {
 	user := &models.User{
 		Name:     name,
 		Email:    email,
@@ -27,4 +27,14 @@ func (repository User) Create(ctx context.Context, name, email, password string)
 	}
 
 	return user, nil
+}
+
+func (repository *User) GetById(ctx context.Context, id uint64) (*models.User, error) {
+	var user models.User
+
+	if err := repository.db.WithContext(ctx).First(&user, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
