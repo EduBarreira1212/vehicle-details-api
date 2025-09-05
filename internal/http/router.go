@@ -26,6 +26,7 @@ func BuildRouter() *gin.Engine {
 	})
 
 	api.POST("/users", controllers.CreateUser)
+	api.GET("/users/:userID", controllers.GetUser)
 
 	return r
 }
