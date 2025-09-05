@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/EduBarreira1212/vehicle-details-api/internal/config"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
@@ -38,4 +39,23 @@ func CreateUser(c *gin.Context) {
 	}
 
 	responses.JSON(c.Writer, http.StatusCreated, userCreated)
+}
+
+func GetUser(c *gin.Context) {
+	parameters := c.Param("userID")
+
+	ID, err := strconv.ParseUint(parameters, 10, 64)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	repository := repositories.NewUserRepository(config.DB)
+	user, err := repository.GetById(c.Request.Context(), ID)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusOK, user)
 }
