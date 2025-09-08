@@ -27,6 +27,7 @@ func BuildRouter() *gin.Engine {
 
 	api.POST("/users", controllers.CreateUser)
 	api.GET("/users/:userID", controllers.GetUser)
+	api.DELETE("/users/:userID", controllers.DeleteUser)
 
 	return r
 }
