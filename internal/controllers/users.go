@@ -59,3 +59,22 @@ func GetUser(c *gin.Context) {
 
 	responses.JSON(c.Writer, http.StatusOK, user)
 }
+
+func DeleteUser(c *gin.Context) {
+	parameters := c.Param("userID")
+
+	ID, err := strconv.ParseUint(parameters, 10, 64)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	repository := repositories.NewUserRepository(config.DB)
+	err = repository.Delete(c.Request.Context(), ID)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusNoContent, nil)
+}
