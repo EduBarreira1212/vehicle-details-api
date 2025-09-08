@@ -60,6 +60,42 @@ func GetUser(c *gin.Context) {
 	responses.JSON(c.Writer, http.StatusOK, user)
 }
 
+func UpdateUser(c *gin.Context) {
+	parameters := c.Param("userID")
+
+	ID, err := strconv.ParseUint(parameters, 10, 64)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var user models.User
+	if err = json.Unmarshal(body, &user); err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = user.Prepare("update"); err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	repository := repositories.NewUserRepository(config.DB)
+	err = repository.Update(c.Request.Context(), ID, user.Name, user.Email, user.Password)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusNoContent, nil)
+}
+
 func DeleteUser(c *gin.Context) {
 	parameters := c.Param("userID")
 
