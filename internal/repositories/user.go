@@ -39,6 +39,23 @@ func (repository *User) GetById(ctx context.Context, id uint64) (*models.User, e
 	return &user, nil
 }
 
+func (repository *User) Update(ctx context.Context, id uint64, name, email, password string) error {
+	var user models.User
+
+	if err := repository.db.WithContext(ctx).
+		Model(&user).
+		Where("id = ?", id).
+		Updates(models.User{
+			Name:     name,
+			Email:    email,
+			Password: password,
+		}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repository *User) Delete(ctx context.Context, id uint64) error {
 	if err := repository.db.WithContext(ctx).Delete(&models.User{}, id).Error; err != nil {
 		return err
