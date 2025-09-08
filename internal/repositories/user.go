@@ -38,3 +38,11 @@ func (repository *User) GetById(ctx context.Context, id uint64) (*models.User, e
 
 	return &user, nil
 }
+
+func (repository *User) Delete(ctx context.Context, id uint64) error {
+	if err := repository.db.WithContext(ctx).Delete(&models.User{}, id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
