@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/EduBarreira1212/vehicle-details-api/internal/auth"
 	"github.com/badoux/checkmail"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -26,7 +27,7 @@ func (user *User) Prepare(step string) error {
 		return err
 	}
 
-	if err := user.format(); err != nil {
+	if err := user.format(step); err != nil {
 		return err
 	}
 
@@ -53,9 +54,18 @@ func (user *User) validate(step string) error {
 	return nil
 }
 
-func (user *User) format() error {
+func (user *User) format(step string) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
+
+	if step == "register" {
+		passwordWithHash, err := auth.Hash(user.Password)
+		if err != nil {
+			return err
+		}
+
+		user.Password = string(passwordWithHash)
+	}
 
 	return nil
 }
