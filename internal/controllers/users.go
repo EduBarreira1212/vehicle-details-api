@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/EduBarreira1212/vehicle-details-api/internal/auth"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/config"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/repositories"
@@ -87,7 +88,55 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	repository := repositories.NewUserRepository(config.DB)
-	err = repository.Update(c.Request.Context(), ID, user.Name, user.Email, user.Password)
+	err = repository.Update(c.Request.Context(), ID, user.Name, user.Email)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusNoContent, nil)
+}
+
+func UpdatePassword(c *gin.Context) {
+	parameters := c.Param("userID")
+
+	ID, err := strconv.ParseUint(parameters, 10, 64)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var password models.Password
+	if err = json.Unmarshal(body, &password); err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	repository := repositories.NewUserRepository(config.DB)
+	passwordInDB, err := repository.GetPassword(c.Request.Context(), ID)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err = auth.VerifyPassword(passwordInDB, password.Current); err != nil {
+		responses.Error(c.Writer, http.StatusUnauthorized, err)
+		return
+	}
+
+	passwordWithHash, err := auth.Hash(password.New)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	err = repository.UpdatePassword(c.Request.Context(), ID, string(passwordWithHash))
 	if err != nil {
 		responses.Error(c.Writer, http.StatusInternalServerError, err)
 		return
