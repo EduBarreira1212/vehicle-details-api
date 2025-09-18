@@ -28,6 +28,7 @@ func BuildRouter() *gin.Engine {
 	api.POST("/users", controllers.CreateUser)
 	api.GET("/users/:userID", controllers.GetUser)
 	api.PUT("/users/:userID", controllers.UpdateUser)
+	api.PUT("/users/:userID/update-password", controllers.UpdatePassword)
 	api.DELETE("/users/:userID", controllers.DeleteUser)
 
 	return r
