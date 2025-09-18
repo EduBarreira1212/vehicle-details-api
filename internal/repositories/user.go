@@ -39,16 +39,40 @@ func (repository *User) GetById(ctx context.Context, id uint64) (*models.User, e
 	return &user, nil
 }
 
-func (repository *User) Update(ctx context.Context, id uint64, name, email, password string) error {
+func (repository *User) Update(ctx context.Context, id uint64, name, email string) error {
 	var user models.User
 
 	if err := repository.db.WithContext(ctx).
 		Model(&user).
 		Where("id = ?", id).
 		Updates(models.User{
-			Name:     name,
-			Email:    email,
-			Password: password,
+			Name:  name,
+			Email: email,
+		}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository *User) GetPassword(ctx context.Context, id uint64) (string, error) {
+	var user models.User
+
+	if err := repository.db.WithContext(ctx).First(&user, id).Error; err != nil {
+		return "", err
+	}
+
+	return user.Password, nil
+}
+
+func (repository *User) UpdatePassword(ctx context.Context, id uint64, newPassword string) error {
+	var user models.User
+
+	if err := repository.db.WithContext(ctx).
+		Model(&user).
+		Where("id = ?", id).
+		Updates(models.User{
+			Password: newPassword,
 		}).Error; err != nil {
 		return err
 	}
