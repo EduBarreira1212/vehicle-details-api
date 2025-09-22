@@ -30,6 +30,7 @@ func BuildRouter() *gin.Engine {
 	api.PUT("/users/:userID", controllers.UpdateUser)
 	api.PUT("/users/:userID/update-password", controllers.UpdatePassword)
 	api.DELETE("/users/:userID", controllers.DeleteUser)
+	api.GET("/users/:userID/get-history", controllers.GetUserHistory)
 
 	return r
 }
