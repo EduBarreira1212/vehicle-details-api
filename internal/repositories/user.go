@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +21,7 @@ func (repository *User) Create(ctx context.Context, name, email, password string
 		Name:     name,
 		Email:    email,
 		Password: password,
+		History:  datatypes.JSON([]byte("[]")),
 	}
 
 	if err := repository.db.WithContext(ctx).Create(user).Error; err != nil {
