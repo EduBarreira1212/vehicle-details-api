@@ -89,3 +89,17 @@ func (repository *User) Delete(ctx context.Context, id uint64) error {
 
 	return nil
 }
+
+func (repository *User) GetUserHistoryById(ctx context.Context, id uint64) (datatypes.JSON, error) {
+	var user models.User
+
+	if err := repository.db.WithContext(ctx).First(&user, id).Error; err != nil {
+		return nil, err
+	}
+
+	if len(user.History) == 0 {
+		return datatypes.JSON([]byte("[]")), nil
+	}
+
+	return user.History, nil
+}
