@@ -103,3 +103,14 @@ func (repository *User) GetUserHistoryById(ctx context.Context, id uint64) (data
 
 	return user.History, nil
 }
+
+func (repository *User) UpdateUserHistory(ctx context.Context, id uint64, newPlateSearched string) error {
+	return repository.db.WithContext(ctx).
+		Model(&models.User{}).
+		Where("id = ?", id).
+		Update("history", gorm.Expr(
+			"COALESCE(CASE WHEN jsonb_typeof(history) = 'array' THEN history ELSE '[]'::jsonb END, '[]'::jsonb) || to_jsonb(?)",
+			newPlateSearched,
+		)).
+		Error
+}
