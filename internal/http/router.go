@@ -19,7 +19,7 @@ func BuildRouter() *gin.Engine {
 	api.DELETE("/users/:userID", controllers.DeleteUser)
 	api.GET("/users/:userID/get-history", controllers.GetUserHistory)
 
-	api.POST("/fipe", controllers.GetFipe)
+	api.POST("/fipe/:userID", controllers.GetFipe)
 
 	return r
 }
