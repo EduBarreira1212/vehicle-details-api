@@ -109,7 +109,10 @@ func (repository *User) UpdateUserHistory(ctx context.Context, id uint64, newPla
 		Model(&models.User{}).
 		Where("id = ?", id).
 		Update("history", gorm.Expr(
-			"COALESCE(CASE WHEN jsonb_typeof(history) = 'array' THEN history ELSE '[]'::jsonb END, '[]'::jsonb) || to_jsonb(?)",
+			`COALESCE(
+            CASE WHEN jsonb_typeof(history) = 'array' THEN history ELSE '[]'::jsonb END,
+            '[]'::jsonb
+        ) || to_jsonb(?::text)`,
 			newPlateSearched,
 		)).
 		Error
