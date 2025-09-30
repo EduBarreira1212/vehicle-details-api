@@ -1,7 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"log"
+
+	"github.com/EduBarreira1212/vehicle-details-api/internal/config"
+	apihttp "github.com/EduBarreira1212/vehicle-details-api/internal/http"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
+)
 
 func main() {
-	fmt.Println("App entry point")
+	cfg := config.LoadConfig()
+	config.ConnectDatabase(cfg.DB_URL)
+
+	config.DB.AutoMigrate(&models.User{})
+
+	router := apihttp.BuildRouter()
+
+	addr := ":" + cfg.Port
+	log.Printf("listening on %s", addr)
+
+	if err := router.Run(addr); err != nil {
+		log.Fatal(err)
+	}
 }
