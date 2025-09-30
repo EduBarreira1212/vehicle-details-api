@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
+	"github.com/EduBarreira1212/vehicle-details-api/internal/controllers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,29 +12,14 @@ func BuildRouter() *gin.Engine {
 
 	api := r.Group("/api")
 
-	api.POST("/fipe", func(c *gin.Context) {
-		var req models.FipeRequest
-		if err := c.BindJSON(&req); err != nil {
-			c.JSON(400, gin.H{"error": "invalid request"})
-			return
-		}
+	api.POST("/users", controllers.CreateUser)
+	api.GET("/users/:userID", controllers.GetUser)
+	api.PUT("/users/:userID", controllers.UpdateUser)
+	api.PUT("/users/:userID/update-password", controllers.UpdatePassword)
+	api.DELETE("/users/:userID", controllers.DeleteUser)
+	api.GET("/users/:userID/get-history", controllers.GetUserHistory)
 
-		c.JSON(200, gin.H{
-			"fipe": req,
-		})
-	})
-
-	api.POST("/users", func(c *gin.Context) {
-		var user models.User
-		if err := c.BindJSON(&user); err != nil {
-			c.JSON(400, gin.H{"error": "invalid request"})
-			return
-		}
-
-		c.JSON(200, gin.H{
-			"user": user,
-		})
-	})
+	api.POST("/fipe/:userID", controllers.GetFipe)
 
 	return r
 }

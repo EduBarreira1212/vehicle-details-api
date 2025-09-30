@@ -7,7 +7,7 @@ import (
 )
 
 type FipeRequest struct {
-	Plate string `json:"plate"`
+	Plate string `json:"plate,omitempty"`
 }
 
 func (fipeRequest *FipeRequest) Validate() error {
@@ -22,6 +22,7 @@ func (fipeRequest *FipeRequest) Validate() error {
 	if oldFormat.MatchString(fipeRequest.Plate) || mercosulFormat.MatchString(fipeRequest.Plate) {
 		return nil
 	}
+
 	return errors.New("invalid plate format")
 }
 
