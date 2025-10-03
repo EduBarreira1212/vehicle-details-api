@@ -12,6 +12,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type FipeInfoFiltered struct {
+	Brand     string `json:"brand"`
+	Model     string `json:"model"`
+	Year      string `json:"year"`
+	ModelYear string `json:"model_year"`
+	Color     string `json:"color"`
+	Chassis   string `json:"chassis"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Plate     string `json:"plate"`
+	Fipe      []Fipe `json:"fipe"`
+}
+
+type Fipe struct {
+	Brand          string `json:"brand"`
+	Model          string `json:"model"`
+	YearModel      string `json:"year_model"`
+	ReferenceMonth string `json:"reference_month"`
+	Fuel           string `json:"fuel"`
+	Value          string `json:"value"`
+}
+
 func GetFipe(c *gin.Context) {
 	parameters := c.Param("userID")
 
@@ -44,5 +66,30 @@ func GetFipe(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c.Writer, http.StatusCreated, fipeDetails)
+	outFipe := make([]Fipe, 0, len(fipeDetails.Fipe))
+	for _, item := range fipeDetails.Fipe {
+		outFipe = append(outFipe, Fipe{
+			Brand:          item.Marca,
+			Model:          item.Modelo,
+			YearModel:      strconv.Itoa(item.AnoModelo),
+			ReferenceMonth: item.MesReferencia,
+			Fuel:           item.Combustivel,
+			Value:          item.Valor,
+		})
+	}
+
+	out := FipeInfoFiltered{
+		Brand:     fipeDetails.InformacoesVeiculo.Marca,
+		Model:     fipeDetails.InformacoesVeiculo.Modelo,
+		Year:      fipeDetails.InformacoesVeiculo.Ano,
+		ModelYear: fipeDetails.InformacoesVeiculo.AnoModelo,
+		Color:     fipeDetails.InformacoesVeiculo.Cor,
+		Chassis:   fipeDetails.InformacoesVeiculo.Chassi,
+		City:      fipeDetails.InformacoesVeiculo.Municipio,
+		State:     fipeDetails.InformacoesVeiculo.UF,
+		Plate:     fipeDetails.InformacoesVeiculo.Placa,
+		Fipe:      outFipe,
+	}
+
+	responses.JSON(c.Writer, http.StatusCreated, out)
 }
