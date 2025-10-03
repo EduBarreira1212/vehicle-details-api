@@ -21,5 +21,7 @@ func BuildRouter() *gin.Engine {
 
 	api.POST("/fipe/:userID", controllers.GetFipe)
 
+	api.POST("/login", controllers.Login)
+
 	return r
 }
