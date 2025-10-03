@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -21,14 +19,8 @@ func GetFipe(c *gin.Context) {
 		return
 	}
 
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	var plate models.FipeRequest
-	if err = json.Unmarshal(body, &plate); err != nil {
+	if err = c.ShouldBindJSON(&plate); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
@@ -44,5 +36,30 @@ func GetFipe(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c.Writer, http.StatusCreated, fipeDetails)
+	outFipe := make([]models.Fipe, 0, len(fipeDetails.Fipe))
+	for _, item := range fipeDetails.Fipe {
+		outFipe = append(outFipe, models.Fipe{
+			Brand:          item.Marca,
+			Model:          item.Modelo,
+			YearModel:      strconv.Itoa(item.AnoModelo),
+			ReferenceMonth: item.MesReferencia,
+			Fuel:           item.Combustivel,
+			Value:          item.Valor,
+		})
+	}
+
+	out := models.VehicleDataFiltered{
+		Brand:     fipeDetails.InformacoesVeiculo.Marca,
+		Model:     fipeDetails.InformacoesVeiculo.Modelo,
+		Year:      fipeDetails.InformacoesVeiculo.Ano,
+		ModelYear: fipeDetails.InformacoesVeiculo.AnoModelo,
+		Color:     fipeDetails.InformacoesVeiculo.Cor,
+		Chassis:   fipeDetails.InformacoesVeiculo.Chassi,
+		City:      fipeDetails.InformacoesVeiculo.Municipio,
+		State:     fipeDetails.InformacoesVeiculo.UF,
+		Plate:     fipeDetails.InformacoesVeiculo.Placa,
+		Fipe:      outFipe,
+	}
+
+	responses.JSON(c.Writer, http.StatusCreated, out)
 }
