@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -70,6 +71,13 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to update a different user"))
+		return
+	}
+
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
@@ -103,6 +111,13 @@ func UpdatePassword(c *gin.Context) {
 	ID, err := strconv.ParseUint(parameters, 10, 64)
 	if err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to update a different user's password"))
 		return
 	}
 
@@ -154,6 +169,13 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to delete a different user"))
+		return
+	}
+
 	repository := repositories.NewUserRepository(config.DB)
 	err = repository.Delete(c.Request.Context(), ID)
 	if err != nil {
@@ -170,6 +192,13 @@ func GetUserHistory(c *gin.Context) {
 	ID, err := strconv.ParseUint(parameters, 10, 64)
 	if err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to get a different user's history"))
 		return
 	}
 
