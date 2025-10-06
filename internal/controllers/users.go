@@ -1,9 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -16,19 +14,13 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
-	parameters, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	var user models.User
-	if err = json.Unmarshal(parameters, &user); err != nil {
+	if err := c.ShouldBindJSON(&user); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
 
-	if err = user.Prepare("register"); err != nil {
+	if err := user.Prepare("register"); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
@@ -78,14 +70,8 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	var user models.User
-	if err = json.Unmarshal(body, &user); err != nil {
+	if err = c.ShouldBindJSON(&user); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
@@ -121,14 +107,8 @@ func UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	var password models.Password
-	if err = json.Unmarshal(body, &password); err != nil {
+	if err = c.ShouldBindJSON(&password); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
