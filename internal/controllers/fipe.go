@@ -61,5 +61,5 @@ func GetFipe(c *gin.Context) {
 		Fipe:      outFipe,
 	}
 
-	responses.JSON(c.Writer, http.StatusCreated, out)
+	responses.JSON(c.Writer, http.StatusOK, out)
 }

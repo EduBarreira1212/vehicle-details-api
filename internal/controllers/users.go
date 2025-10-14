@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
-	"io"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -15,19 +14,13 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
-	parameters, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	var user models.User
-	if err = json.Unmarshal(parameters, &user); err != nil {
+	if err := c.ShouldBindJSON(&user); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
 
-	if err = user.Prepare("register"); err != nil {
+	if err := user.Prepare("register"); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
@@ -39,7 +32,13 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c.Writer, http.StatusCreated, userCreated)
+	token, err := auth.CreateToken(userCreated.ID)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusCreated, token)
 }
 
 func GetUser(c *gin.Context) {
@@ -70,14 +69,15 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to update a different user"))
 		return
 	}
 
 	var user models.User
-	if err = json.Unmarshal(body, &user); err != nil {
+	if err = c.ShouldBindJSON(&user); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
@@ -106,14 +106,15 @@ func UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		responses.Error(c.Writer, http.StatusUnprocessableEntity, err)
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to update a different user's password"))
 		return
 	}
 
 	var password models.Password
-	if err = json.Unmarshal(body, &password); err != nil {
+	if err = c.ShouldBindJSON(&password); err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
@@ -154,6 +155,13 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to delete a different user"))
+		return
+	}
+
 	repository := repositories.NewUserRepository(config.DB)
 	err = repository.Delete(c.Request.Context(), ID)
 	if err != nil {
@@ -170,6 +178,13 @@ func GetUserHistory(c *gin.Context) {
 	ID, err := strconv.ParseUint(parameters, 10, 64)
 	if err != nil {
 		responses.Error(c.Writer, http.StatusBadRequest, err)
+		return
+	}
+
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	if userIDInToken != ID {
+		responses.Error(c.Writer, http.StatusForbidden, errors.New("isn't possible to get a different user's history"))
 		return
 	}
 

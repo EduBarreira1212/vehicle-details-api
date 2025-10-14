@@ -41,6 +41,18 @@ func (repository *User) GetById(ctx context.Context, id uint64) (*models.User, e
 	return &user, nil
 }
 
+func (repository *User) GetByEmail(ctx context.Context, email string) (*models.User, error) {
+	var user models.User
+
+	if err := repository.db.WithContext(ctx).
+		Where("email = ?", email).
+		First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (repository *User) Update(ctx context.Context, id uint64, name, email string) error {
 	var user models.User
 
