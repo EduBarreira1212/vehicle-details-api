@@ -32,7 +32,13 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c.Writer, http.StatusCreated, userCreated)
+	token, err := auth.CreateToken(userCreated.ID)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusCreated, token)
 }
 
 func GetUser(c *gin.Context) {
