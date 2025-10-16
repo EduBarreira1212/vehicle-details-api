@@ -13,6 +13,7 @@ func BuildRouter() *gin.Engine {
 
 	api := r.Group("/api")
 
+	api.GET("/me", middlewares.AuthMiddleware(), controllers.GetMyProfile)
 	api.POST("/users", controllers.CreateUser)
 	api.GET("/users/:userID", middlewares.AuthMiddleware(), controllers.GetUser)
 	api.PUT("/users/:userID", middlewares.AuthMiddleware(), controllers.UpdateUser)
