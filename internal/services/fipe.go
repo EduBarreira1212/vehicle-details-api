@@ -41,14 +41,20 @@ func GetFipe(c *gin.Context, userID uint64, plate string) (models.Response, erro
 		return models.Response{}, err
 	}
 
-	repository := repositories.NewUserRepository(config.DB)
-	err = repository.UpdateUserHistory(c.Request.Context(), userID, plate)
-	if err != nil {
+	var respJSON models.Response
+	if err := json.Unmarshal(body, &respJSON); err != nil {
 		return models.Response{}, err
 	}
 
-	var respJSON models.Response
-	if err := json.Unmarshal(body, &respJSON); err != nil {
+	history := models.History{
+		UserID: userID,
+		Plate:  respJSON.Placa,
+		Model:  respJSON.InformacoesVeiculo.Modelo,
+	}
+
+	repository := repositories.NewUserRepository(config.DB)
+	err = repository.UpdateUserHistory(c.Request.Context(), userID, history)
+	if err != nil {
 		return models.Response{}, err
 	}
 
