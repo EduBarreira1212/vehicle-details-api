@@ -16,10 +16,18 @@ type User struct {
 	Name      string         `json:"name,omitempty"`
 	Email     string         `gorm:"uniqueIndex;size:180;not null" json:"email,omitempty"`
 	Password  string         `json:"password,omitempty"`
-	History   datatypes.JSON `json:"history,omitempty"`
+	History   []History      `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"history,omitempty"`
 	CreatedAt time.Time      `json:"created_at,omitempty"`
 	UpdatedAt time.Time      `json:"updated_at,omitempty"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+type History struct {
+	ID        uint64    `gorm:"primaryKey" json:"id,omitempty"`
+	UserID    uint64    `json:"user_id,omitempty"`
+	Plate     string    `json:"plate,omitempty"`
+	Model     string    `json:"model,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 }
 type PublicUser struct {
 	ID      uint64         `gorm:"primaryKey" json:"id,omitempty"`
