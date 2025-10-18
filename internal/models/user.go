@@ -25,7 +25,7 @@ type User struct {
 type History struct {
 	ID        uint64    `gorm:"primaryKey" json:"id,omitempty"`
 	UserID    uint64    `gorm:"not null;uniqueIndex:ux_user_plate"`
-	Plate     string    `gorm:"not null;uniqueIndex:ux_user_plate"`
+	Plate     string    `gorm:"not null;uniqueIndex:ux_user_plate" json:"plate,omitempty"`
 	Model     string    `json:"model,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time
