@@ -21,7 +21,7 @@ func BuildRouter() *gin.Engine {
 	api.DELETE("/users/:userID", middlewares.AuthMiddleware(), controllers.DeleteUser)
 	api.GET("/users/:userID/get-history", middlewares.AuthMiddleware(), controllers.GetUserHistory)
 
-	api.POST("/fipe/:userID", middlewares.AuthMiddleware(), controllers.GetFipe)
+	api.POST("/fipe", middlewares.AuthMiddleware(), controllers.GetFipe)
 
 	api.POST("/login", controllers.Login)
 
