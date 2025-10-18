@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/EduBarreira1212/vehicle-details-api/internal/models"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type User struct {
@@ -21,7 +21,7 @@ func (repository *User) Create(ctx context.Context, name, email, password string
 		Name:     name,
 		Email:    email,
 		Password: password,
-		History:  datatypes.JSON([]byte("[]")),
+		History:  []models.History{},
 	}
 
 	if err := repository.db.WithContext(ctx).Create(user).Error; err != nil {
@@ -105,30 +105,39 @@ func (repository *User) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 
-func (repository *User) GetUserHistoryById(ctx context.Context, id uint64) (datatypes.JSON, error) {
-	var user models.User
+func (repository *User) GetUserHistoryById(ctx context.Context, id uint64) ([]models.History, error) {
+	var history []models.History
 
-	if err := repository.db.WithContext(ctx).First(&user, id).Error; err != nil {
+	if err := repository.db.WithContext(ctx).
+		Where("user_id = ?", id).
+		Find(&history).Error; err != nil {
 		return nil, err
 	}
 
-	if len(user.History) == 0 {
-		return datatypes.JSON([]byte("[]")), nil
+	if len(history) == 0 {
+		return []models.History{}, nil
 	}
 
-	return user.History, nil
+	return history, nil
 }
 
-func (repository *User) UpdateUserHistory(ctx context.Context, id uint64, newPlateSearched string) error {
+func (repository *User) UpdateUserHistory(
+	ctx context.Context,
+	id uint64,
+	newHistory models.History,
+) error {
+	newHistory.UserID = id
+
 	return repository.db.WithContext(ctx).
-		Model(&models.User{}).
-		Where("id = ?", id).
-		Update("history", gorm.Expr(
-			`COALESCE(
-            CASE WHEN jsonb_typeof(history) = 'array' THEN history ELSE '[]'::jsonb END,
-            '[]'::jsonb
-        ) || to_jsonb(?::text)`,
-			newPlateSearched,
-		)).
-		Error
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "user_id"},
+				{Name: "plate"},
+			},
+			DoUpdates: clause.Assignments(map[string]any{
+				"model":      gorm.Expr("EXCLUDED.model"),
+				"updated_at": gorm.Expr("NOW()"),
+			}),
+		}).
+		Create(&newHistory).Error
 }
