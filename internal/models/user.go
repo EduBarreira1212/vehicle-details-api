@@ -24,11 +24,14 @@ type User struct {
 
 type History struct {
 	ID        uint64    `gorm:"primaryKey" json:"id,omitempty"`
-	UserID    uint64    `json:"user_id,omitempty"`
-	Plate     string    `json:"plate,omitempty"`
+	UserID    uint64    `gorm:"not null;uniqueIndex:ux_user_plate"`
+	Plate     string    `gorm:"not null;uniqueIndex:ux_user_plate"`
 	Model     string    `json:"model,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+
 type PublicUser struct {
 	ID      uint64         `gorm:"primaryKey" json:"id,omitempty"`
 	Name    string         `json:"name,omitempty"`
