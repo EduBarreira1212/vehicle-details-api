@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 
@@ -11,6 +12,11 @@ import (
 	"github.com/EduBarreira1212/vehicle-details-api/internal/repositories"
 	"github.com/gin-gonic/gin"
 )
+
+type ApiStatus struct {
+	Codigo   int    `json:"codigo"`
+	Mensagem string `json:"mensagem"`
+}
 
 type GetFipePriceRequest struct {
 	Placa string `json:"placa"`
@@ -39,6 +45,15 @@ func GetFipe(c *gin.Context, userID uint64, plate string) (models.Response, erro
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return models.Response{}, err
+	}
+
+	var st ApiStatus
+	if err = json.Unmarshal(body, &st); err != nil {
+		return models.Response{}, err
+	}
+
+	if st.Codigo == 199 {
+		return models.Response{}, errors.New("vehicle not found")
 	}
 
 	var respJSON models.Response
