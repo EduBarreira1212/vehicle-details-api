@@ -13,6 +13,7 @@ func BuildRouter() *gin.Engine {
 
 	api := r.Group("/api")
 
+	api.GET("/me", middlewares.AuthMiddleware(), controllers.GetMyProfile)
 	api.POST("/users", controllers.CreateUser)
 	api.GET("/users/:userID", middlewares.AuthMiddleware(), controllers.GetUser)
 	api.PUT("/users/:userID", middlewares.AuthMiddleware(), controllers.UpdateUser)
@@ -20,7 +21,7 @@ func BuildRouter() *gin.Engine {
 	api.DELETE("/users/:userID", middlewares.AuthMiddleware(), controllers.DeleteUser)
 	api.GET("/users/:userID/get-history", middlewares.AuthMiddleware(), controllers.GetUserHistory)
 
-	api.POST("/fipe/:userID", middlewares.AuthMiddleware(), controllers.GetFipe)
+	api.POST("/fipe", middlewares.AuthMiddleware(), controllers.GetFipe)
 
 	api.POST("/login", controllers.Login)
 
