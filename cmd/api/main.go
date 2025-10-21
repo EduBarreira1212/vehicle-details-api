@@ -12,7 +12,7 @@ func main() {
 	cfg := config.LoadConfig()
 	config.ConnectDatabase(cfg.DB_URL)
 
-	config.DB.AutoMigrate(&models.User{}, &models.History{})
+	config.DB.AutoMigrate(&models.User{}, &models.History{}, &models.PasswordResetToken{})
 
 	router := apihttp.BuildRouter()
 
