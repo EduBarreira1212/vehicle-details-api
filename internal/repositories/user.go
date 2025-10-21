@@ -31,10 +31,13 @@ func (repository *User) Create(ctx context.Context, name, email, password string
 	return user, nil
 }
 
-func (repository *User) GetById(ctx context.Context, id uint64) (*models.User, error) {
-	var user models.User
+func (repository *User) GetById(ctx context.Context, id uint64) (*models.PublicUser, error) {
+	var user models.PublicUser
 
-	if err := repository.db.WithContext(ctx).First(&user, id).Error; err != nil {
+	if err := repository.db.WithContext(ctx).
+		Model(&models.User{}).
+		Select("id", "name", "email").
+		First(&user, id).Error; err != nil {
 		return nil, err
 	}
 

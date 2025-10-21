@@ -21,6 +21,12 @@ type User struct {
 	UpdatedAt time.Time      `json:"updated_at,omitempty"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
+type PublicUser struct {
+	ID      uint64         `gorm:"primaryKey" json:"id,omitempty"`
+	Name    string         `json:"name,omitempty"`
+	Email   string         `gorm:"uniqueIndex;size:180;not null" json:"email,omitempty"`
+	History datatypes.JSON `json:"history,omitempty"`
+}
 
 func (user *User) Prepare(step string) error {
 	if err := user.validate(step); err != nil {
