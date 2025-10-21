@@ -38,6 +38,16 @@ type PublicUser struct {
 	History []History `gorm:"foreignKey:UserID" json:"history,omitempty"`
 }
 
+type PasswordResetToken struct {
+	ID        uint64     `gorm:"primaryKey"`
+	UserID    uint64     `gorm:"index;not null"`
+	TokenHash []byte     `gorm:"size:64;uniqueIndex;not null"`
+	ExpiresAt time.Time  `gorm:"index;not null"`
+	UsedAt    *time.Time `gorm:"index"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 func (user *User) Prepare(step string) error {
 	if err := user.validate(step); err != nil {
 		return err
