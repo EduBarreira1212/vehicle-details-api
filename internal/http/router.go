@@ -25,5 +25,8 @@ func BuildRouter() *gin.Engine {
 
 	api.POST("/login", controllers.Login)
 
+	api.POST("/auth/forgot-password", controllers.ForgotPassword)
+	api.POST("/auth/reset-password", controllers.ResetPassword)
+
 	return r
 }
