@@ -7,7 +7,6 @@ import (
 
 	"github.com/EduBarreira1212/vehicle-details-api/internal/auth"
 	"github.com/badoux/checkmail"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -16,16 +15,27 @@ type User struct {
 	Name      string         `json:"name,omitempty"`
 	Email     string         `gorm:"uniqueIndex;size:180;not null" json:"email,omitempty"`
 	Password  string         `json:"password,omitempty"`
-	History   datatypes.JSON `json:"history,omitempty"`
+	History   []History      `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"history,omitempty"`
 	CreatedAt time.Time      `json:"created_at,omitempty"`
 	UpdatedAt time.Time      `json:"updated_at,omitempty"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
+
+type History struct {
+	ID        uint64         `gorm:"primaryKey" json:"id,omitempty"`
+	UserID    uint64         `gorm:"not null;uniqueIndex:ux_user_plate"`
+	Plate     string         `gorm:"not null;uniqueIndex:ux_user_plate" json:"plate,omitempty"`
+	Model     string         `json:"model,omitempty"`
+	CreatedAt time.Time      `json:"created_at,omitempty"`
+	UpdatedAt time.Time      `json:"updated_at,omitempty"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
 type PublicUser struct {
-	ID      uint64         `gorm:"primaryKey" json:"id,omitempty"`
-	Name    string         `json:"name,omitempty"`
-	Email   string         `gorm:"uniqueIndex;size:180;not null" json:"email,omitempty"`
-	History datatypes.JSON `json:"history,omitempty"`
+	ID      uint64    `gorm:"primaryKey" json:"id,omitempty"`
+	Name    string    `json:"name,omitempty"`
+	Email   string    `gorm:"uniqueIndex;size:180;not null" json:"email,omitempty"`
+	History []History `gorm:"foreignKey:UserID" json:"history,omitempty"`
 }
 
 func (user *User) Prepare(step string) error {

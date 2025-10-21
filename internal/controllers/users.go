@@ -41,6 +41,19 @@ func CreateUser(c *gin.Context) {
 	responses.JSON(c.Writer, http.StatusCreated, token)
 }
 
+func GetMyProfile(c *gin.Context) {
+	userIDInToken, _ := auth.GetUserIDFromContext(c)
+
+	repository := repositories.NewUserRepository(config.DB)
+	user, err := repository.GetById(c.Request.Context(), userIDInToken)
+	if err != nil {
+		responses.Error(c.Writer, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(c.Writer, http.StatusOK, user)
+}
+
 func GetUser(c *gin.Context) {
 	parameters := c.Param("userID")
 
