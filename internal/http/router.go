@@ -8,6 +8,8 @@ import (
 
 func BuildRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(gin.Recovery())
+	r.Use(gin.Logger())
 
 	r.GET("/", func(c *gin.Context) { c.String(200, "Ok!") })
 
