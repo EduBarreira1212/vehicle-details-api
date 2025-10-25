@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/EduBarreira1212/vehicle-details-api/internal/controllers"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/middlewares"
 	"github.com/gin-gonic/gin"
@@ -11,7 +13,7 @@ func BuildRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
 
-	r.GET("/", func(c *gin.Context) { c.String(200, "Ok!") })
+	r.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	api := r.Group("/api")
 
