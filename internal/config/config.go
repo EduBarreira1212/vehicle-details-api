@@ -13,6 +13,7 @@ type Config struct {
 	FIPE_EXTERNAL_API_URL string
 	FIPE_API_TOKEN        string
 	SecretKey             []byte
+	GinMode               string
 }
 
 func LoadConfig() *Config {
@@ -27,6 +28,7 @@ func LoadConfig() *Config {
 		FIPE_EXTERNAL_API_URL: getEnv("FIPE_EXTERNAL_API_URL", ""),
 		FIPE_API_TOKEN:        getEnv("FIPE_API_TOKEN", ""),
 		SecretKey:             []byte(getEnv("SECRET_KEY", "")),
+		GinMode:               getEnv("GIN_MODE", ""),
 	}
 }
 
