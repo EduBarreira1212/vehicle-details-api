@@ -11,7 +11,7 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
-	config.ConnectDatabase(cfg.DB_URL)
+	config.ConnectDatabase(cfg.DATABASE_URL)
 
 	m := migrations.New(config.DB)
 	if err := m.Migrate(); err != nil {
