@@ -1,0 +1,11 @@
+.git
+.gitignore
+node_modules
+dist
+build
+bin
+.tmp
+.env
+*.log
+coverage
+.postgres-data

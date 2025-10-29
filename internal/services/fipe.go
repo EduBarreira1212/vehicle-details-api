@@ -24,7 +24,7 @@ type GetFipePriceRequest struct {
 }
 
 func GetFipe(c *gin.Context, userID uint64, plate string) (models.Response, error) {
-	url := "https://api.placafipe.com.br/getplacafipe"
+	url := config.LoadConfig().FIPE_EXTERNAL_API_URL
 
 	payload := GetFipePriceRequest{
 		Placa: plate,

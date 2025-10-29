@@ -8,10 +8,12 @@ import (
 )
 
 type Config struct {
-	Port           string
-	DB_URL         string
-	FIPE_API_TOKEN string
-	SecretKey      []byte
+	Port                  string
+	DATABASE_URL          string
+	FIPE_EXTERNAL_API_URL string
+	FIPE_API_TOKEN        string
+	SecretKey             []byte
+	GinMode               string
 }
 
 func LoadConfig() *Config {
@@ -21,10 +23,12 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		Port:           getEnv("PORT", "8080"),
-		DB_URL:         getEnv("DB_URL", "postgres://user:pass@localhost:5432/dbname?sslmode=disable"),
-		FIPE_API_TOKEN: getEnv("FIPE_API_TOKEN", ""),
-		SecretKey:      []byte(getEnv("SECRET_KEY", "")),
+		Port:                  getEnv("PORT", "8080"),
+		DATABASE_URL:          getEnv("DATABASE_URL", "postgres://user:pass@localhost:5432/dbname?sslmode=disable"),
+		FIPE_EXTERNAL_API_URL: getEnv("FIPE_EXTERNAL_API_URL", ""),
+		FIPE_API_TOKEN:        getEnv("FIPE_API_TOKEN", ""),
+		SecretKey:             []byte(getEnv("SECRET_KEY", "")),
+		GinMode:               getEnv("GIN_MODE", ""),
 	}
 }
 
