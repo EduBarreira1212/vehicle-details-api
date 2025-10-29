@@ -1,15 +1,33 @@
 package http
 
 import (
+	"net/http"
+	"strings"
+
+	"github.com/EduBarreira1212/vehicle-details-api/internal/config"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/controllers"
 	"github.com/EduBarreira1212/vehicle-details-api/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
 func BuildRouter() *gin.Engine {
+	cfg := config.LoadConfig()
+
+	mode := strings.ToLower(strings.TrimSpace(cfg.GinMode))
+	switch mode {
+	case "release":
+		gin.SetMode(gin.ReleaseMode)
+	case "test":
+		gin.SetMode(gin.TestMode)
+	case "debug":
+		gin.SetMode(gin.DebugMode)
+	default:
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) { c.String(200, "Ok!") })
+	r.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	api := r.Group("/api")
 
